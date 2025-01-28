@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<link href='https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css' rel='stylesheet'>
+<meta content='width=320, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' name='viewport'>
+<title>Slackでhideした人を完全消滅させる方法 - @ssig33</title>
+<h1>
+<a href='../index.html'>ssig33's microblog Archive</a>
+</h1>
+<p>ここはssig33のmicroblog.pubのアーカイブです。</p>
+<p>
+現在は
+<a href='https://hollo.ssig33.com/@ssig33'>@ssig33@hollo.ssig33.com</a>
+に移行しています。そちらをフォローしてください。
+</p>
+<hr>
+<div>
+<p><p>Slackでhideした人を完全消滅させる方法</p>
+<p>Slackを開発者モードで起動した上で、コンソール開いて、以下を実行するようにすると、hideした人の発言が完全に見えなくなって最強便利。</p>
+<pre><code data-microblogpub-lexer="javascript">
+setInterval(() => {
+  Array.from(document.querySelectorAll(".c-message_kit__gutter"))
+    .filter(e => e.textContent.match(/This message is hidden/))
+    .forEach(e => e.remove());
+}, 500);
+
+
+</code></pre>
+<p>会話の流れが追いづらくなるなどの問題はあるけどまあそのあたりはやっていきましょう。</p>
+</p>
+<p>
+<a href='4a1e6ff5ec824783901ab0b83dbaf54e.html'>2024-08-31 23:39:43 +0900</a>
+</p>
+</div>
+<style>
+  img{
+    max-width: 320px;
+  }
+  * {
+    font-family: 'Noto Sans JP', sans-serif !important;
+  }
+</style>

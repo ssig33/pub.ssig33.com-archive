@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<link href='https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css' rel='stylesheet'>
+<meta content='width=320, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' name='viewport'>
+<title>手持ちの Chrome 拡張を Manifest V.2 =&gt; V.3 にアップデートした - @ssig33</title>
+<h1>
+<a href='../index.html'>ssig33's microblog Archive</a>
+</h1>
+<p>ここはssig33のmicroblog.pubのアーカイブです。</p>
+<p>
+現在は
+<a href='https://hollo.ssig33.com/@ssig33'>@ssig33@hollo.ssig33.com</a>
+に移行しています。そちらをフォローしてください。
+</p>
+<hr>
+<div>
+<p><p>手持ちの Chrome 拡張を Manifest V.2 =&gt; V.3 にアップデートした</p>
+<ul>
+<li><a href="https://chrome.google.com/webstore/detail/capture-video-element/ikeochnpamfhkpmnineadmccfnaicacl" rel="noopener">https://chrome.google.com/webstore/detail/capture-video-element/ikeochnpamfhkpmnineadmccfnaicacl</a></li>
+<li><a href="https://github.com/ssig33/video-capture2" rel="noopener">https://github.com/ssig33/video-capture2</a></li>
+</ul>
+<p>これね。</p>
+<p>とりあえずやってみた感想雑に書いとく</p>
+<ul>
+<li>意外となんも考えずにアップデートしても動く</li>
+<li>content script で蛮族行為できるのはあいかわらずなので、とにかく「どうにでもなる」</li>
+<li>background page が service worker になったのはだるい</li>
+</ul>
+<p>やっぱ最後のが問題で、前なら background page でできてたことを message 送って popup や content script でやるしかなくなるので、パフォーマンス悪化は発生しうる。</p>
+<p>ただ Chrome 全体の都合を考えればこのへん分からなくもない部分ではあり、巨大で重い background page がいすわるよりは標準技術の範囲で制御できる service worker のほうが(content script で個別のページが重くなったとしても)全体としては高パフォーマンス、低リソース消費になるのだろう。</p>
+<p>というのとは別として</p>
+<ul>
+<li><a href="https://crxjs.dev/vite-plugin" rel="noopener">https://crxjs.dev/vite-plugin</a></li>
+</ul>
+<p>これがマジでよくできていて、これを使っていればまじで誰でも超高速に Chrome 拡張開発できると思う。ぼくが最初に拡張つくったころはまだこんな便利なものはなかったので、辛い世界だった。</p>
+</p>
+<p>
+<a href='9b95eaa25bc14d1cac080ca890cf2a8c.html'>2023-03-16 23:00:54 +0900</a>
+</p>
+</div>
+<style>
+  img{
+    max-width: 320px;
+  }
+  * {
+    font-family: 'Noto Sans JP', sans-serif !important;
+  }
+</style>

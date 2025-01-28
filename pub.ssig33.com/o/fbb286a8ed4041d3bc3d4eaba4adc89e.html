@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<link href='https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css' rel='stylesheet'>
+<meta content='width=320, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' name='viewport'>
+<title>Amazon Bedrock Runtime API で Claude 2 を使う - @ssig33</title>
+<h1>
+<a href='../index.html'>ssig33's microblog Archive</a>
+</h1>
+<p>ここはssig33のmicroblog.pubのアーカイブです。</p>
+<p>
+現在は
+<a href='https://hollo.ssig33.com/@ssig33'>@ssig33@hollo.ssig33.com</a>
+に移行しています。そちらをフォローしてください。
+</p>
+<hr>
+<div>
+<p><p>Amazon Bedrock Runtime API で Claude 2 を使う</p>
+<p>みなさんこんにちは。 OpenAI の API は使っていますか?使っている人が多いと思います。これにかんしては世間にも情報が多いので何も言うことはありません。</p>
+<p>ところで、 OpenAI の API においては gpt-3.5-turbo-16k というモデルでは 16000 token まで入力することができます。これって日本語の文字数にしてどれくらいになるんでしょうか?このあたりブラックボックスなのでなんとも言えないのですが、入出力あわせて 15000 字程度は扱えると思っておけばだいたいよさそうです。</p>
+<p>15000 字というのは多いようで少ない量で、ちょっと変なことをやっているとすぐ頭をぶつける量です。このなかで工夫して価値があるものを作るのもよいのですが、制限がない世界も見てみたい。</p>
+<p>そういうときには Anthropic という会社が提供している Claude 2 というモデルを使うのがよいでしょう。これは 10 万トークンまで扱えるようです。これが日本語で何文字相当なのか僕は知りません。まだ頭をぶつけたことがないからです。「日本語で出版されている本をまるまる読ませる」とかだとさすがにまだキツい感じがしますが、しかし事実上無限に近い処理能力があります。</p>
+<p>この Claude 2 を API 経由で使うというかプログラムに組込む場合は AWS が提供している Amazon Bedrock Runtime API というサービスを使うのがよさそうです。しかしマジでこの世の誰もこれを使っていないためわたくしは手探りで使い方を調べることになりました。生成AIって本当に流行ってんの?</p>
+<p>Ruby から使う場合以下のようにするとよいしょう。</p>
+<ol>
+<li>AWS のコンソールから Claude 2 の利用申請を出しておきます
+<ul>
+<li>AWS にはいくつか利用申請が必要なリソースがありますが、それと一緒です</li>
+<li>申請は適当書いてても即時通るようです
+<ul>
+<li>社名記載が必須のようなかんじですが indivisual developer とか書いてても通りました</li>
+<li>それが規約上大丈夫かは知らん</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>aws-sdk-bedrockruntime という Gem をインストールしておきます
+<ul>
+<li>aws-sdk-bedrock ではないです。</li>
+</ul>
+</li>
+<li>コードを書く！！！！！</li>
+</ol>
+<p>コードは以下のようなかんじ</p>
+<pre><code data-microblogpub-lexer="ruby">
+prompt = <<~PROMPT
+
+Human: ChatGPT の Prompt 相当のメッセージをここに書く。
+
+Assistant:
+PROMPT
+
+# http_reqd_timeout の指定は必須です。デカい入力を渡した場合レスポンスは相応に遅くなります。
+bedrock = Aws::BedrockRuntime::Client.new(region: 'us-east-1',
+                                          http_read_timeout: 360)
+
+payload = {
+  prompt:,
+  max_tokens_to_sample: 2400,
+  temperature: 0.1,
+  top_p: 0.9
+}
+
+res = bedrock.invoke_model({
+                             accept: 'application/json',
+                             body: payload.to_json,
+                             content_type: 'application/json',
+                             model_id: 'anthropic.claude-v2'
+                           })
+
+result = res.body.read.to_s
+
+puts result
+
+</code></pre>
+<p>プロンプトに HUMAN: ASSISTANT: などと謎の呪文とその前後の改行がありますがこれは必須です。コード中にもコメントしましたがレスポンスは非常に遅い(体感で 1 万トークンあたり 45 秒前後)ので http_reqd_timeout の指定は必須です(非同期に結果を取りにいくような仕組みはおそらくありません)。あとのアレコレは OpenAI の API に慣れてればまあ分かるんじゃないですかね?</p>
+<p><strong>利用料金は天文学的</strong>であり、 10 万トークンフルでぶちこむと 1 実行で 150 円ぐらいかかります。性能的には「多少気が効かなくなった gpt-3.5-turbo ぐらい」という感じ。コストパフォーマンスが見合うものであるかは、まあ人それぞれでしょう。ぼくの場合は「それでも使いたい」というユースケースが手元にあります(具体的にはテレビ番組の字幕ファイルを Claude 2 に突っ込んでテレビ番組の目次と要約を生成させています)。</p>
+<p>何もかも Claude 2 でやると性能的にも金額的にもマズいことになるので「デカいデータを GPT-3.5 や GPT-4 で処理可能な領域にまで圧縮する」みたいな使い方は結構有効な気がしますね。</p>
+</p>
+<p>
+<a href='fbb286a8ed4041d3bc3d4eaba4adc89e.html'>2023-10-29 11:43:27 +0900</a>
+</p>
+</div>
+<style>
+  img{
+    max-width: 320px;
+  }
+  * {
+    font-family: 'Noto Sans JP', sans-serif !important;
+  }
+</style>

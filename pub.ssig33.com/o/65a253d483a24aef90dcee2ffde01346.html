@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<link href='https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css' rel='stylesheet'>
+<meta content='width=320, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' name='viewport'>
+<title>Litestream を Docker の中に入れて SQLite3 で永続化するやつをやっている。 - @ssig33</title>
+<h1>
+<a href='../index.html'>ssig33's microblog Archive</a>
+</h1>
+<p>ここはssig33のmicroblog.pubのアーカイブです。</p>
+<p>
+現在は
+<a href='https://hollo.ssig33.com/@ssig33'>@ssig33@hollo.ssig33.com</a>
+に移行しています。そちらをフォローしてください。
+</p>
+<hr>
+<div>
+<p><p>Litestream を Docker の中に入れて SQLite3 で永続化するやつをやっている。</p>
+<p>とりあえずちゃんと動いているし、開発環境で本番の最新データベースをとってきてそれで開発みたいなことをしやすくてかなり便利。ただとにかく SQLite3 の表現力が低くて辛いみたいなことが多い。文字列 split したかったら一旦 replace とか駆使して JSON にしてから json_each で取得して JOIN する、というような SQL を書いたりする。</p>
+<p>ここまでやって気付いたんだけど、 SQLite3 が使われるデータベースというのは、非常にメンテしづらい、されないものなんだな、ということ。組み込み、クライアント指向だから、ソフトウェアの提供者からはデータベースの状態を確認しづらいし、思った通り運用することが、非常に難しい。</p>
+<p>このため SQLite3 を使う場合、通常非常によく考えられたスキーマにたいして、高い水準でメンテナンスされたコードからアクセスされることになるだろう。このため、 SQL のインターフェイスそのものが MySQL や PostgreSQL などと比較して表現力が低くても(通常)困らない。</p>
+<p>この「よく考えられたスキーマ」「高い水準でメンテナンスされたコード」というのは Web アプリケーションなどと比べてどうかという話で、 Web アプリケーションであればエラーが出たところでログ見りゃいいし、データベースのスキーマに問題があれば後から適当に直せばいい。一昔前は「データベースはアプリより寿命が長い」などと言ったものだけど、今ではアプリを運用しながらどんどんデータベースをいじっていくことは普通のことになった。 Online DDL でできることはどんどん増えているし、 Online DDL でどうにもならなければ Blue-Green Deploy だ、というかんじになる。</p>
+<p>もちろん Web アプリの領域においても厳密なモデリングとスキーマ構築は有用で、バッチリできるならそれに越したことはないのだけど、現実的には動かしながらどうにかすることが多いだろう。それを支えるような豊かな表現力も SQL インターフェイスにそなわっている。</p>
+<p>Litestream で SQLite3 を Web アプリの永続化層にすると、このあたりがちょっとマッチしないなとは思う。ただまあこれ非常に便利ですね。おうち k8s でアプリカジュアルに運営するときの永続化層としてかなり有力だ、と感じてます。作者の方アンチ k8s のようですが。</p>
+</p>
+<p>
+<a href='65a253d483a24aef90dcee2ffde01346.html'>2022-12-30 21:37:47 +0900</a>
+</p>
+</div>
+<style>
+  img{
+    max-width: 320px;
+  }
+  * {
+    font-family: 'Noto Sans JP', sans-serif !important;
+  }
+</style>

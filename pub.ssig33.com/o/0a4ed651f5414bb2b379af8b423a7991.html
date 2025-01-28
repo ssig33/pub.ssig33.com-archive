@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<link href='https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css' rel='stylesheet'>
+<meta content='width=320, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' name='viewport'>
+<title>Fastladder の Rails を 4.2 =&gt; 7.1 までアップデートした - @ssig33</title>
+<h1>
+<a href='../index.html'>ssig33's microblog Archive</a>
+</h1>
+<p>ここはssig33のmicroblog.pubのアーカイブです。</p>
+<p>
+現在は
+<a href='https://hollo.ssig33.com/@ssig33'>@ssig33@hollo.ssig33.com</a>
+に移行しています。そちらをフォローしてください。
+</p>
+<hr>
+<div>
+<p><p>Fastladder の Rails を 4.2 =&gt; 7.1 までアップデートした</p>
+<p><a href="https://gyazo.com/94ec15761cb0e225fd4646068a1b17b6"><img src="https://i.gyazo.com/94ec15761cb0e225fd4646068a1b17b6.png" alt="Image from Gyazo" /></a></p>
+<ul>
+<li><a href="https://github.com/fastladder/fastladder/pull/297">Upgrade Rails 4.2 =&gt; 7.1</a></li>
+</ul>
+<p>その他信頼性向上のためにテストをいくつか追加した</p>
+<ul>
+<li><a href="https://github.com/fastladder/fastladder/pull/298">Add ApplicationSystemTest</a></li>
+<li><a href="https://github.com/fastladder/fastladder/pull/299">Add E2E test across feed addition, crawling, and display</a></li>
+</ul>
+<p>このアップデートにともなって <a href="https://github.com/fastladder/fastladder/blob/master/Dockerfile">Dockerfile</a> も追加してある。この Dockerfile は Rails 標準の Dockerfile からいくつかの最適化などを削ってより簡易にしたもの。</p>
+<p>fastladder orgnization ではパッケージを配る権限がなかったので、とりあえず<a href="https://github.com/ssig33/fastladder/pkgs/container/fastladder">ぼくのネームスペースでビルドした Docker イメージを配っている</a>。</p>
+<p>以下のような docker-compose.yml を使えば手元で一発で fastladder が起動できるようになった。</p>
+<pre><code data-microblogpub-lexer="yaml">
+version: "3"
+services:
+  web:
+    image: ghcr.io/ssig33/fastladder:main
+    platform: linux/amd64
+    environment:
+      DATABASE_URL: "mysql2://root@db/fastladder"
+      RAILS_ENV: production
+      SECRET_KEY_BASE: fadfjajfhldsfajksdfalhjfaslfadhsjfhsaldfhadsljhfjaskdl3842789csal
+      PORT: "8080"
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+    command: ./bin/rails s
+  cralwer:
+    platform: linux/amd64
+    image: ghcr.io/ssig33/fastladder:main
+    environment:
+      DATABASE_URL: "mysql2://root@db/fastladder"
+      RAILS_ENV: production
+      SECRET_KEY_BASE: fadfjajfhldsfajksdfalhjfaslfadhsjfhsaldfhadsljhfjaskdl3842789csal
+    depends_on:
+      - db
+    command: bundle exec ruby script/crawler
+    restart: always
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+
+</code></pre>
+<p>fastladder が数年間完全放置されていたことからも分かるとおり RSS リーダーというのは現代において元気な領域ではないと思うが、実際使ってみると便利なのでよろしければどうぞ。</p>
+<p>Feedly や inoreader もたまに触っているが、絶対に fastladder のほうがずっと出来いいと思います。</p>
+</p>
+<p>
+<a href='0a4ed651f5414bb2b379af8b423a7991.html'>2023-12-31 16:06:32 +0900</a>
+</p>
+</div>
+<style>
+  img{
+    max-width: 320px;
+  }
+  * {
+    font-family: 'Noto Sans JP', sans-serif !important;
+  }
+</style>
